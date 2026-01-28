@@ -1,0 +1,25 @@
+[ApiController]
+[Route("api/[controller]")]
+public class EmployeeController : ControllerBase
+{
+    private readonly LeaveDbContext _context;
+
+    public EmployeeController(LeaveDbContext context)
+    {
+        _context = context;
+    }
+
+    [HttpPost]
+    public IActionResult AddEmployee(Employee emp)
+    {
+        _context.Employees.Add(emp);
+        _context.SaveChanges();
+        return Ok("Employee Added");
+    }
+
+    [HttpGet]
+    public IActionResult GetEmployees()
+    {
+        return Ok(_context.Employees.ToList());
+    }
+}
