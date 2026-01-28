@@ -1,0 +1,39 @@
+[ApiController]
+[Route("api/[controller]")]
+public class LeaveController : ControllerBase
+{
+    private readonly LeaveDbContext _context;
+
+    public LeaveController(LeaveDbContext context)
+    {
+        _context = context;
+    }
+
+    // Employee applies leave
+    [HttpPost("apply")]
+    public IActionResult ApplyLeave(LeaveRequest leave)
+    {
+        leave.Status = "Pending";
+        _context.LeaveRequests.Add(leave);
+        _context.SaveChanges();
+        return Ok("Leave Applied Successfully");
+    }
+
+    // Manager approves/rejects leave
+    [HttpPut("approve/{id}")]
+    public IActionResult ApproveLeave(int id, string status)
+    {
+        var leave = _context.LeaveRequests.Find(id);
+        if (leave == null) return NotFound();
+
+        leave.Status = status;
+        _context.SaveChanges();
+        return Ok("Leave Status Updated");
+    }
+
+    [HttpGet]
+    public IActionResult GetAllLeaves()
+    {
+        return Ok(_context.LeaveRequests.ToList());
+    }
+}
